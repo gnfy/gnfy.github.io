@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>天平小游戏</title>
+<style>
+  .balance {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+  }
+  .balance .scale {
+    position: relative;
+    width: 300px;
+    height: 10px;
+    background-color: gray;
+    transition: transform 1s;
+    transform: rotate(-5deg);
+  }
+  .balance .left, .balance .right {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: silver;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    top: -50px;
+  }
+  .balance .left { left: -50px; }
+  .balance .right { right: -50px; }
+  .numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 300px;
+    margin: 20px auto;
+  }
+  .number {
+    width: 80px;
+    height: 80px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .triangle {
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent; /* 左边框 */
+    border-right: 20px solid transparent; /* 右边框 */
+    border-bottom: 34.64px solid gray; /* 下边框，34.64px是根号3乘以50，使三角形为等边三角形 */
+    position: absolute;
+    top:110px;
+  }
+</style>
+</head>
+<body>
+<div class="balance">
+  <div class="scale">
+    <div class="left">?</div>
+    <div class="right">?</div>
+  </div>
+  <div class="triangle"></div>
+</div>
+<div class="numbers"></div>
+
+<script>
+  const leftSide = document.querySelector('.left');
+  const rightSide = document.querySelector('.right');
+  const numbersContainer = document.querySelector('.numbers');
+
+  // 生成随机数学问题
+  function generateProblem() {
+    const num1 = Math.floor(Math.random() * 10);
+    const num2 = Math.floor(Math.random() * 10);
+    const operation = Math.random() < 0.5 ? '+' : '-';
+    leftSide.textContent = `${num1} ${operation} ${num2}`;
+    return operation === '+' ? num1 + num2 : num1 - num2;
+  }
+
+  let correctAnswer = generateProblem();
+
+  // 生成数字选择按钮
+  for (let i = 0; i < 10; i++) {
+    const numButton = document.createElement('div');
+    numButton.textContent = i;
+    numButton.classList.add('number');
+    numButton.addEventListener('click', function() {
+      checkAnswer(i);
+    });
+    numbersContainer.appendChild(numButton);
+  }
+
+  // 检查答案并更新天平状态
+  function checkAnswer(playerAnswer) {
+    const difference = correctAnswer - playerAnswer;
+    const scale = document.querySelector('.scale');
+    let deg = 0;
+    if (difference === 0) {
+        setTimeout(() => {
+            correctAnswer = generateProblem();
+            scale.style.transform = 'rotate(-5deg)';
+        }, 2000)
+        
+    } else {
+        deg = difference > 0 ? -5 : 5;
+    }
+    scale.style.transform = `rotate(${deg}deg)`;
+  }
+</script>
+</body>
+</html>
